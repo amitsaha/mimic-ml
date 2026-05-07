@@ -1,3 +1,3 @@
 # Miscellaneous machine and stats learnings
 
-Coded by human and computers on computers. 
+Coded mostly by a human on a computer
