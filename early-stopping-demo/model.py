@@ -61,7 +61,7 @@ def train_loop(dataloader, model, loss_fn, optimizer):
         optimizer.step()
         optimizer.zero_grad()
 
-        running_loss = +loss.item()
+        running_loss += loss.item()
 
         # val_acc, val_loss, val_auc, records = evaluate(
         #     model, val_loader, device, loss_criterion
@@ -70,12 +70,7 @@ def train_loop(dataloader, model, loss_fn, optimizer):
     return avg_loss
 
 
-def test_loop(dataloader):
-    model_data = torch.load("model.pth")
-    model = NeuralNetwork()
-    # we directly feed the state dict here
-    model.load_state_dict(model_data["model_state_dict"])
-    criterion = nn.CrossEntropyLoss(weight=model_data["class_weights"])
+def test_loop(dataloader, model):
 
     model.eval()
     size = len(dataloader.dataset)
@@ -114,14 +109,7 @@ if __name__ == "__main__":
     )
     for t in range(MAX_EPOCHS):
         train_loss = train_loop(train_dataloader, model, criterion, optimizer)
-        torch.save(
-            {
-                "model_state_dict": model.state_dict(),
-                "class_weights": weight_ratio,
-            },
-            "model.pth",
-        )
-        test_loss = test_loop(test_dataloader)
+        test_loss = test_loop(test_dataloader, model)
         print(f"Epoch {t + 1} Train loss {train_loss} Test loss {test_loss}")
         early_stopping(test_loss, model)
         if early_stopping.early_stop:
